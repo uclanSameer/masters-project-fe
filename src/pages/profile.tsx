@@ -18,12 +18,28 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const { req } = context;
     const cookies = parse(req.headers.cookie || '');
     const token = cookies.token;
-    const data = await PostWithToken<UserProfile>('http://localhost:8080/api/v1/details/profile', {}, token);
 
-    return {
-        props: {
-            'data': data.data
+    if (!token) return {
+        redirect: {
+            destination: '/',
+            permanent: false,
         }
     }
 
+    try {
+        const data = await PostWithToken<UserProfile>('http://localhost:8080/api/v1/details/profile', {}, token);
+        return {
+            props: {
+                'data': data.data
+            }
+        }
+    } catch (e) {
+        console.error(e);
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            }
+        }
+    }
 }

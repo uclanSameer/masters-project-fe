@@ -2,13 +2,16 @@ import { MenuItem } from "@/model/menu";
 import { toast } from "react-toastify";
 import Card, { CardProps } from "../card/card";
 import { POST } from "@/utils/requests";
+import AuthContext from "@/context/auth-context";
+import { useContext } from "react";
 
 export default function MenuItems(props: {
     data : MenuItem[]
 }) {
+    const authContext = useContext(AuthContext);
     return (
         <>
-            <div className="bg-gray-700 grid flex flex-wrap gap-6 p-12 content-center rounded grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            <div className="bg-gray-700 grid flex-wrap gap-6 p-12 content-center rounded grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                 {
                     props.data
                         .filter((item) => {
@@ -16,6 +19,7 @@ export default function MenuItems(props: {
                         })
                         .map((item, index) => {
                             function addItem(): void {
+
                                 addItemsToCart(item);
                             }
                             const cardProps: CardProps = {
@@ -40,6 +44,7 @@ export default function MenuItems(props: {
             "quantity": 1
         })
             .then((response) => {
+                authContext.incrementCartItemCount();
                 toast.success("Item added to cart", {
                     position: "bottom-right",
                 });

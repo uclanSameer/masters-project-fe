@@ -9,14 +9,14 @@ import MenuIcon from "./menu-icon";
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import { parse } from 'cookie';
+import CartIcon from '../icon/shoping-cart';
 
-const nonAuthenticatedRoute = ['/login', '/signup', '/'];
+const beforeAuthenticationRoute = ['/login', '/signup', '/'];
 
 const navigationBeforeLogIn = [
     { name: 'Home', href: '/dashboard', current: true },
     { name: 'Menu', href: '/menu', current: false },
     { name: 'Nearby Chefs', href: '/chefs', current: false },
-    { name: 'Cuisines', href: '#', current: false },
     { name: 'Donate', href: '#', current: false },
 ]
 
@@ -24,8 +24,6 @@ const menuItems = [
     { name: 'Your Profile', href: '/profile', show: true },
     { name: 'Settings', href: '/settings', show: true },
     { name: 'orders', href: '/orders', show: true },
-    { name: 'Sell', href: '/sell', show: false },
-    { name: 'apply', href: '/apply', show: true },
 ]
 
 export function classNames(...classes: string[]) {
@@ -43,12 +41,10 @@ export default function NavBar() {
     useEffect(() => {
         const cookie = parse(document.cookie);
         const isLoggedIn = cookie.loggedIn === 'true';
-        console.log(isLoggedIn);
         setLoggedIn((loggedIn) => isLoggedIn);
         if (isLoggedIn) {
-            console.log(cookie);
             if (cookie.role === 'USER') {
-                if (nonAuthenticatedRoute.includes(router.pathname)) {
+                if (beforeAuthenticationRoute.includes(router.pathname)) {
                     router.push('/dashboard');
                 }
             }
@@ -66,20 +62,19 @@ export default function NavBar() {
     function logOutHandler() {
         const cookie = parse(document.cookie);
         if (cookie.loggedIn === 'true') {
-            setLoggedIn((loggedIn) => false);
+            setLoggedIn(() => false);
             document.cookie = 'loggedIn=false';
             document.cookie = 'token=';
             document.cookie = 'role=';
             document.cookie = 'email=';
             document.cookie = 'address=';
-            router.push('/login');
+            authContext.onLogout();
         }
     }
 
     return (
 
         <Fragment>
-            <>{console.log(loggedIn)}</>
             <Disclosure as="nav" className="bg-black">
                 {({ open }) => (
                     <>
@@ -105,7 +100,10 @@ export default function NavBar() {
                                             className="rounded-full ml-2 bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                         >
                                             <span className="sr-only">view Cart</span>
-                                            <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
+                                            <div className="h-6 w-6" aria-hidden="true">
+                                                <CartIcon itemCount={authContext.cartItemCount} />
+                                            </div>
+                                            {/* <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" /> */}
                                         </Link>
 
                                         {/* Profile dropdown */}

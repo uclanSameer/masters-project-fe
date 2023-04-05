@@ -3,6 +3,7 @@ import { GET, POST } from "./requests";
 import { Response } from "@/model/response";
 import { ChefSearchRequest } from "@/model/search";
 import { Business } from "@/model/business";
+import { MenuItem } from "@/model/menu";
 
 export default class ApiRequests {
     public static getAddressInfo(enteredPostalCode: string): Promise<Response<Array<PostCodeResult>>> {
@@ -19,6 +20,16 @@ export default class ApiRequests {
 
     public static getNearbyBusinesses(chefSearchRequest: ChefSearchRequest) {
         return POST<Array<Business>>('http://localhost:3001/search/cheif', chefSearchRequest)
+    }
+
+    public static getMenuItemsByEmail(email: string) {
+        return POST<Array<MenuItem>>('http://localhost:3001/search/menu', {
+            email: email
+        });
+    }
+
+    public static getCuisines(){
+        return GET<Array<String>>('http://localhost:3001/search/cuisines');
     }
 
 }

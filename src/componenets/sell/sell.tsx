@@ -23,9 +23,7 @@ export default function SellComponent(props: {
 
     const [imageAsBase64, setImageAsBase64] = useState('');
 
-    const handleSubmit = (e: {
-        preventDefault: () => void;
-    }) => {
+    const handleSubmit = (e:React.MouseEvent<HTMLButtonElement>) => {
 
         e.preventDefault();
         // check all the fields are filled
@@ -51,9 +49,7 @@ export default function SellComponent(props: {
         props.onAddMenu(menu);
     };
 
-    const handleImageAsFile = (e: {
-        preventDefault: () => void;
-    }) => {
+    const handleImageAsFile = (e: React.ChangeEvent) => {
         e.preventDefault();
         const currentImage = foodImageRef.current;
         if (currentImage === null || currentImage === undefined) return;

@@ -5,21 +5,18 @@ import { Response } from "@/model/response";
 import { POST } from "@/utils/requests";
 import { useEffect, useState } from "react";
 
-export default function Menu(props: {
+export default function MenuPage(props: {
     response: Response<Array<MenuItem>>
 }) {
     const [search, setSearch] = useState<string>('');
     const [searchResult, setSearchResult] = useState<Array<MenuItem>>(props.response.data);
     const allMenu = props.response.data;
 
-    console.log(JSON.stringify(searchResult));
-
-
     useEffect(() => {
         if (search !== '') {
             POST<Array<MenuItem>>('http://localhost:3001/search/menu', {
                 page: 1,
-                size: 10,
+                size: 10,   
                 search: search
             })
                 .then(data => {
@@ -32,13 +29,10 @@ export default function Menu(props: {
 
     function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
         e.preventDefault();
-        if (e.currentTarget.value) {
-
-        }
         if (e.currentTarget.value === '') {
             setSearchResult(allMenu);
         }
-        if (e.currentTarget.value === ' ') {
+        if (e.currentTarget.value.includes(' ')) {
             let value = e.currentTarget.value;
             setSearch(value);
         }
@@ -58,15 +52,21 @@ export default function Menu(props: {
 }
 
 export async function getStaticProps() {
-    const response = await POST<Array<MenuItem>>('http://localhost:3001/search/menu/all', {
-        page: 1,
-        size: 10,
-    })
+    try {
+        const response = await POST<Array<MenuItem>>('http://localhost:3001/search/menu/all', {
+            page: 1,
+            size: 10,
+        })
 
-    return {
-        props: {
-            response,
-            revalidate: 3600
+        return {
+            props: {
+                response,
+                revalidate: 3600
+            }
+        }
+    } catch (error) {
+        return {
+            notFound: true
         }
     }
 }

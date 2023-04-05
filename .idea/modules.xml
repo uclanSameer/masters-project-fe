@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/neighbour-typescript.iml" filepath="$PROJECT_DIR$/.idea/neighbour-typescript.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/masters-project-fe.iml" filepath="$PROJECT_DIR$/.idea/masters-project-fe.iml" />
     </modules>
   </component>
 </project>

@@ -1,17 +1,17 @@
 import FilterPage from "@/componenets/search/filter-page";
-import {Business} from "@/model/business";
-import {PostCodeResult} from "@/model/post-code";
-import {Response} from "@/model/response";
-import {ChefSearchRequest} from "@/model/search";
-import {Address} from "@/model/user";
+import { Business } from "@/model/business";
+import { Response } from "@/model/response";
+import { ChefSearchRequest } from "@/model/search";
+import { Address } from "@/model/user";
 import ApiRequests from "@/utils/api-requests";
-import {parse} from "cookie";
-import {GetServerSidePropsContext} from "next";
-import {Dispatch, SetStateAction, useState} from "react";
+import { parse } from "cookie";
+import { GetServerSidePropsContext } from "next";
+import { useState } from "react";
 
 
 type Props = {
     data: Array<Business>,
+    cuisines: Array<string>,
     address: Address
 };
 
@@ -24,53 +24,61 @@ export default function Chefs(props: Props) {
             addresses={addresses}
             businesses={businesses}
             address={address}
+            cuisines={props.cuisines}
         />
     )
 }
 
-async function getNewAddress(
-    postCode: string,
-    setAddresses: Dispatch<SetStateAction<Address[]>>): Promise<void> {
-    const postCodeResult: Response<PostCodeResult[]> = await ApiRequests.getAddressInfo(postCode);
-    if (postCodeResult.data.length === 0) {
-        return;
-    }
-    const address = postCodeResult.data
-        .map((result: PostCodeResult) => {
-            return result.address;
-        });
-    setAddresses(address);
-}
-
-function selectedAddress(setAddress: Dispatch<SetStateAction<Address>>, address: Address) {
-    setAddress(address);
-}
-
-
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-    const cookies = parse(context.req.headers.cookie || '');
-    const address: Address = JSON.parse(cookies.address);
+    try {
+        const cookies = parse(context.req.headers.cookie || '');
+        const address: Address = JSON.parse(cookies.address);
 
-    const chefSearchRequest: ChefSearchRequest = getChefSearchRequest(address);
-    const data: Response<Array<Business>> = await ApiRequests.getNearbyBusinesses(chefSearchRequest);
+        const chefSearchRequest: ChefSearchRequest = getChefSearchRequest(address);
+        const data: Response<Array<Business>> = await ApiRequests.getNearbyBusinesses(chefSearchRequest);
 
-    return {
-        props: {
-            data: data.data,
-            address: address
+        const cuisines = (await ApiRequests.getCuisines()).data;
+
+        return {
+            props: {
+                data: data.data,
+                cuisines,
+                address: address
+            }
+        }
+    } catch (e) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/'
+            }
         }
     }
 }
 
 
-export function getChefSearchRequest(address: Address): ChefSearchRequest {
-    return {
+export function getChefSearchRequest(
+    address: Address,
+    distance?: number,
+    cuisines?: Array<string>): ChefSearchRequest {
+    if (!address || !address.position) {
+        throw new Error('Address must be provided');
+    }
+    const chefSearchRequest: ChefSearchRequest = {
         page: 1,
         size: 20,
         location: {
             lat: address.position.latitude,
             lon: address.position.longitude
         }
-
+    };
+    if (distance) {
+        chefSearchRequest.radius = distance;
     }
+
+    if (cuisines && cuisines.length > 0) {
+        chefSearchRequest.cuisines = cuisines;
+    }
+
+    return chefSearchRequest
 }

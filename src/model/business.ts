@@ -1,6 +1,7 @@
 import { Address, Position } from "./user";
 
 export interface Business {
+    id?:         string;
     email:      string;
     isFeatured: boolean;
     location:   Location;

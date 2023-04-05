@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import CartSideBar from "./side-bar";
 import CartCard from "@/componenets/card/cart";
 import { DELETE, POST } from "@/utils/requests";
 import { CartInfo, CartItem, Total as CartTotal } from "@/model/cart-info";
+import AuthContext from "@/context/auth-context";
 
 export default function CartComponent(props: {
     total: CartTotal,
     items: Array<CartItem>,
     checkout: () => void
 }) {
-
+    const authContext = useContext(AuthContext);
     const [incemented, setIncremented] = useState(false);
     const [decremented, setDecrement] = useState(false);
 
@@ -37,17 +38,26 @@ export default function CartComponent(props: {
             quantity: quantity
         })
             .then(() => {
-                setDecrement(true);
-                toast.success("Item removed from cart", {
-                    position: "bottom-right",
-                });
+                handleSuccess();
             })
             .catch((err: Error) => {
-                console.log(err);
-                toast.error("Error removing item from cart", {
-                    position: "bottom-right",
-                });
+                handleError(err);
             });
+    }
+
+    function handleError(err: Error) {
+        console.log(err);
+        toast.error("Error removing item from cart", {
+            position: "bottom-right",
+        });
+    }
+
+    function handleSuccess() {
+        authContext.decrementCartItemCount();
+        setDecrement(true);
+        toast.success("Item removed from cart", {
+            position: "bottom-right",
+        });
     }
 
     function incrementQuantity(id: number, quantity: number) {
@@ -56,6 +66,7 @@ export default function CartComponent(props: {
             quantity: quantity
         })
             .then(res => {
+                authContext.incrementCartItemCount();
                 setIncremented(true);
                 toast.success("Item removed from cart", {
                     position: "bottom-right",

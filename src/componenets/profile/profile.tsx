@@ -7,9 +7,7 @@ import { UserProfile } from "@/model/user";
 export default function Profile(props: {
     profile: UserProfile
 }) {
-    const handleProfileImageChange = (e: {
-        preventDefault: () => void;
-    }) => {
+    const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         const currentImage = imageRef.current;
         if (currentImage === null || currentImage === undefined) return;
@@ -25,9 +23,7 @@ export default function Profile(props: {
         };
     }
 
-    const handleProfileImageSubmit = (e: {
-        preventDefault: () => void;
-    }) => {
+    const handleProfileImageSubmit = (e: React.MouseEvent) => {
         e.preventDefault();
         if (imageAsBase64 === '') {
             toast.info("Please select an image", {

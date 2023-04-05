@@ -1,10 +1,10 @@
 import CartComponent from '@/componenets/cart/cart';
-import {CartInfo} from '@/model/cart-info';
-import {Response} from '@/model/response';
-import {POST, PostWithToken} from '@/utils/requests';
-import {parse} from 'cookie';
-import {GetServerSidePropsContext} from 'next';
-import {toast} from 'react-toastify';
+import { CartInfo } from '@/model/cart-info';
+import { Response } from '@/model/response';
+import { POST, PostWithToken } from '@/utils/requests';
+import { parse } from 'cookie';
+import { GetServerSidePropsContext } from 'next';
+import { toast } from 'react-toastify';
 
 export default function CartPage(props: {
     response: Response<CartInfo>
@@ -26,11 +26,21 @@ export default function CartPage(props: {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     try {
-        const {req} = context;
+        const { req } = context;
 
         const cookies = parse(req.headers.cookie || '');
 
+        if (!cookies.token) {
+            return {
+                redirect: {
+                    destination: '/login',
+                    permanent: false
+                }
+            };
+        }
+
         const response = await PostWithToken<CartInfo>("http://localhost:8080/api/v1/cart/info", {}, cookies.token);
+
         return {
             props: {
                 response

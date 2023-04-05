@@ -19,6 +19,7 @@ export default interface SearchRequest extends AllSearchRequest {
     location?: Location;
     postalCode?: string;
     radius?: number;
+    cuisines?: Array<string>;
   }
   
   export interface Location{

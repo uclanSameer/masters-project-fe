@@ -6,11 +6,16 @@ const AuthContext = createContext({
     onLogout: () => {
     },
     onLogin: (user: User) => {
-    }
+    },
+    cartItemCount: 0,
+    incrementCartItemCount: () => { },
+    decrementCartItemCount: () => { }
 })
 
 export function AuthContextProvider(props: { children: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    const [cartItemCount, setCartItemCount] = useState(0);
 
 
     function loginHandler(loggedInUser: User) {
@@ -27,10 +32,26 @@ export function AuthContextProvider(props: { children: string | number | boolean
         return isLoggedIn;
     }
 
+    function incrementCartItemCount() {
+        setCartItemCount(cartItemCount + 1);
+    }
+
+    function decrementCartItemCount() {
+        if (cartItemCount === 0) {
+            return;
+        }
+        setCartItemCount(cartItemCount - 1);
+    }
+
+
+
     const context = {
         isLoggedIn: getIsLoggedIn(),
         onLogout: logoutHandler,
         onLogin: loginHandler,
+        cartItemCount,
+        incrementCartItemCount: incrementCartItemCount,
+        decrementCartItemCount: decrementCartItemCount
     }
 
     return (<AuthContext.Provider value={

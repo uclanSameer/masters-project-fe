@@ -1,15 +1,17 @@
-import {Business} from '@/model/business';
-import {Address} from '@/model/user';
-import {GoogleMap, MarkerF, useLoadScript} from '@react-google-maps/api';
+import { Business } from '@/model/business';
+import { Address } from '@/model/user';
+import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api';
+import { useRouter } from 'next/router';
 
 export default function Map(props: {
     address: Address,
     businesses: Array<Business>
 }): JSX.Element {
-    const {address} = props;
-    const {businesses} = props;
-    const {isLoaded, loadError} = useLoadScript({
-        googleMapsApiKey: 'AIzaSyA-NFApvEsUiQ9mX_XdIewZvW_uZ0vJGLU',
+    const router = useRouter();
+    const { address } = props;
+    const { businesses } = props;
+    const { isLoaded, loadError } = useLoadScript({
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
     });
     const center = {
         lat: address.position.latitude,
@@ -22,7 +24,7 @@ export default function Map(props: {
     return (
         <GoogleMap
             mapContainerStyle={
-                {height: '800px', width: '800px'}}
+                { height: '800px', width: '800px' }}
             zoom={15}
             center={center}
         >
@@ -53,8 +55,11 @@ export default function Map(props: {
                             }
                         }
                         key={index}
-                        position={{lat: business.location.lat, lng: business.location.lon}}
+                        position={{ lat: business.location.lat, lng: business.location.lon }}
                         title={business.userDetail.name}
+                        onClick={() => {
+                            router.push(`/chefs/${business.id}`);
+                        }}
                     />
                 ))
             }

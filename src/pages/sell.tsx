@@ -13,12 +13,19 @@ export default function Sell() {
     )
 
     function addMenu(menu: MenuItem) {
-        return POST('http://localhost:8080/api/v1/menu/create',
-            menu)
-            .then(() => {
-                toast.success('Menu added successfully!', {
-                    position: "bottom-right",
-                });
-            })
-    }
+    return POST('http://localhost:8080/api/v1/menu/create',
+        menu)
+        .then((response) => {
+            toast.success('Menu added successfully!', {
+                position: "bottom-right",
+            });
+            return response;
+        })
+        .catch((error) => {
+            toast.error('Unable to add menu!', {
+                position: "bottom-right",
+            });
+            return error;
+        })
+}
 }

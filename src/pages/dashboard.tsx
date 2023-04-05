@@ -20,15 +20,21 @@ export default function Dashboard(props: {
 
 export async function getStaticProps() {
 
-    const response = await POST<Array<MenuItem>>('http://localhost:3001/search/menu', {
-        isFeatured: true
-    })
+    try {
+        const response = await POST<Array<MenuItem>>('http://localhost:3001/search/menu', {
+            isFeatured: true
+        })
 
-    return {
-        props: {
-            response
-        },
-        revalidate: 3600
+        return {
+            props: {
+                response
+            },
+            revalidate: 3600
+        }
+    } catch (error) {
+        return {
+            notFound: true
+        }
     }
 }
 

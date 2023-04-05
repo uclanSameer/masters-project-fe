@@ -1,3 +1,5 @@
+import { Address } from "./user";
+
 export interface MenuItem {
     id:              number;
     name:            string;
@@ -14,4 +16,6 @@ export interface MenuItem {
     bookingRequired: boolean;
     businessId?:     number;
     businessEmail?:  string;
+    businessName?:   string;
+    businessLocation?: Address;
 }
