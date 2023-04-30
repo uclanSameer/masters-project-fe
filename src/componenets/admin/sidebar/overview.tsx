@@ -4,6 +4,8 @@ import { useContext } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import MessageIcon from "@/componenets/svg/MessageIcon";
+import { parse } from "cookie";
+import { ClipboardDocumentCheckIcon } from "@heroicons/react/20/solid";
 
 const buttonClass = "flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2  w-full md:w-52";
 const pClass = "text-base leading-4";
@@ -20,21 +22,21 @@ function AdminOverview(props: {
 }) {
     return (
         <div id="menu1" className="flex justify-start  flex-col w-full md:w-auto items-start pb-1 ">
-            <button className={buttonClass}>
+            {/* <button className={buttonClass}>
                 <MessageIcon />
                 <p className={pClass}>Messages</p>
-            </button>
-            <button className={buttonClass}>
+            </button> */}
+            <Link href='/admin/deliveries' className={buttonClass}>
                 <SecurityIcon />
-                <p className={pClass}>Security</p>
-            </button>
-            <button className={buttonClass}>
+                <p className={pClass}>Deliveries</p>
+            </Link>
+            {/* <button className={buttonClass}>
                 <SettingIcon />
                 <p className={pClass}>Settings</p>
-            </button>
+            </button> */}
             <button className={buttonClass}>
                 <ApplicationIcon />
-                <Link href="/admin/applications" className={pClass}>applications</Link>
+                <Link href="/admin/transactions" className={pClass}>transactions</Link>
             </button>
             <Logout logoutHandler={props.logoutHandler} />
         </div>
@@ -64,16 +66,10 @@ function BusinessOverview(props: {
     return (
         <div id="menu1" className="flex justify-start  flex-col w-full md:w-auto items-start pb-1 ">
 
-            <button className={buttonClass}>
+            {/* <button className={buttonClass}>
                 <SettingIcon />
                 <p className={pClass}>Settings</p>
-            </button>
-
-            <button className={buttonClass}>
-                <Documents />
-
-                <Link href="/dashboard" className={pClass}>My items</Link>
-            </button>
+            </button> */}
 
             <button className={buttonClass}>
                 <PlusIcon />
@@ -81,8 +77,15 @@ function BusinessOverview(props: {
             </button>
             <button className={buttonClass}>
                 <PoundSVG />
-                <Link href="/transaction" className={pClass}>Transactions</Link>
+                <Link href="/business-transaction" className={pClass}>Transactions</Link>
             </button>
+
+            {/* <Link href="/business/orders" className={buttonClass +}>
+                <div className="h-6">
+                    <ClipboardDocumentCheckIcon className="h-6" />
+                </div>
+                <span className={pClass}>Orders</span>
+            </Link> */}
 
 
             <Logout logoutHandler={props.logoutHandler} />
@@ -107,8 +110,17 @@ export default function Overview(props: { role: string }) {
         </div>
     );
 
+
     function logoutHandler() {
-        authContext.onLogout();
+        const cookie = parse(document.cookie);
+        if (cookie.loggedIn === 'true') {
+            document.cookie = 'loggedIn=false';
+            document.cookie = 'token=';
+            document.cookie = 'role=';
+            document.cookie = 'email=';
+            document.cookie = 'address=';
+            authContext.onLogout();
+        }
         router.push('/login');
         toast.info('logged out succesfully', {
             position: 'top-right',

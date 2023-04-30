@@ -31,7 +31,11 @@ function PurpleBadge(props: {
 }
 
 
-export default function SignupComponent() {
+export default function SignupComponent(props: {
+    isDelivery: boolean;
+    showAlreadHaveAccount: boolean;
+    buttonLabel?: string;
+}) {
 
     const [cusines, setCusines] = useState<string[]>([]);
 
@@ -123,22 +127,26 @@ export default function SignupComponent() {
     };
 
 
+    const buttonLabel = props.buttonLabel || (isBusinsess ? "Sign up as Business" : "Sign up as User");
     return (
         <>
             <div className="bg-grey-lighter min-h-screen flex flex-col">
                 <div className="container max-w-md mx-auto flex-1 flex flex-col items-center justify-center px-2">
                     <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
                         <h1 className="mb-8 text-3xl text-center text-blue-600">Sign up</h1>
-                        <div className="flex space-x-1 mb-5">
-                            <button className={signupButton} onClick={
-                                () => changeSignUpType(true)
-                            }>user
-                            </button>
-                            <button className={businessSignupButton} onClick={
-                                () => changeSignUpType(false)
-                            }>Business
-                            </button>
-                        </div>
+                        {
+                            (!props.isDelivery) &&
+                            <div className="flex space-x-1 mb-5">
+                                <button className={signupButton} onClick={
+                                    () => changeSignUpType(true)
+                                }>user
+                                </button>
+                                <button className={businessSignupButton} onClick={
+                                    () => changeSignUpType(false)
+                                }>Business
+                                </button>
+                            </div>
+                        }
                         <input
                             type="text"
                             className="block border border-grey-light w-full p-3 rounded mb-4"
@@ -278,17 +286,21 @@ export default function SignupComponent() {
                                 <LockImage />
                             </span>
                             {
-                                isBusinsess ? "Sign up as Business" : "Sign up as User"
+                                buttonLabel
                             }
                         </button>
                     </div>
+                    {
+                        props.showAlreadHaveAccount && (
 
-                    <div className="text-grey-dark mt-6">
-                        Already have an account?
-                        <Link className="border-b border-blue text-blue-600 ml-1" href="/login">
-                            Log in
-                        </Link>.
-                    </div>
+                            <div className="text-grey-dark mt-6">
+                                Already have an account?
+                                <Link className="border-b border-blue text-blue-600 ml-1" href="/login">
+                                    Log in
+                                </Link>.
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         </>
@@ -305,12 +317,17 @@ export default function SignupComponent() {
         const enteredPhoneNumber = phoneNumberRef.current?.value || '';
 
         if (enteredPassword !== enteredConfirmPassword) {
-            console.error('Passwords do not match');
+            toast.error("Passwords do not match", {
+                position: "bottom-right"
+            });
             return;
         }
 
         if (!addressInfo.address || !addressInfo.referencePosition) {
             console.error('Address is not selected');
+            toast.error("Address is not selected", {
+                position: "bottom-right"
+            });
             return;
         }
         const user: UserProfile = {
@@ -327,8 +344,31 @@ export default function SignupComponent() {
             }
         };
 
+        user.userDetail.imageUrl = imageAsBase64;
+
+        if (props.isDelivery) {
+            ApiRequests.registerDeliveryPerson(user)
+                .then((response) => {
+                    if (response) {
+                        toast.success("Signup successfull", {
+                            position: "bottom-right",
+                        });
+                    } else {
+                        toast.error("Something went wrong!!", {
+                            position: "bottom-right",
+                        });
+                    }
+                })
+                .catch((error) => {
+                    toast.error("Something went wrong!!", {
+                        position: "bottom-right",
+                    });
+                    console.error(error);
+                });
+            return;
+        }
+
         if (isBusinsess) {
-            user.userDetail.imageUrls = imageAsBase64;
             const business = await registerBusisness(user);
             if (business) {
                 (window as any).location.href = business.data;

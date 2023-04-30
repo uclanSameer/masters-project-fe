@@ -185,7 +185,7 @@ function LargeFilterView(props: {
     businesses: Business[],
     cuisines: Array<string>
 }) {
-    const [cuisines, setCuisines] = useState<string[]>(props.cuisines);
+    const [cuisines, setCuisines] = useState<string[]>([]);
     const [businesses, setBusinesses] = useState<Business[]>(props.businesses);
     const [address, setAddress] = useState<Address>(props.address);
     const [distance, setDistance] = useState(5);
@@ -212,6 +212,7 @@ function LargeFilterView(props: {
         if (!cuisines.includes(cuisine)) {
             setCuisines([...cuisines, cuisine]);
         }
+        console.log(cuisines);
     }
 
     function removeCusine(cuisine: string) {
@@ -274,19 +275,6 @@ function LargeFilterView(props: {
                                     <p className="text-center text-gray-500">{distance} Km</p>
 
 
-                                    <button
-                                        className="bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded"
-                                        onClick={() => {
-                                            const chefSearchRequest = getChefSearchRequest(address, distance);
-                                            ApiRequests
-                                                .getNearbyBusinesses(chefSearchRequest)
-                                                .then((response) => {
-                                                    setBusinesses(response.data);
-                                                    toast.success("Nearby businesses updated");
-                                                });
-                                        }} type="button">
-                                        Change
-                                    </button>
 
                                 </div>
                                 {/* styled chage location p  */}
@@ -300,12 +288,6 @@ function LargeFilterView(props: {
                                         ref={postalCodeRef as MutableRefObject<HTMLInputElement>}
                                         placeholder="Postal Code" />
 
-                                    <button
-                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                        onClick={() => onChangeLocation()} type="button">
-                                        Change
-                                    </button>
-
                                     {
                                         addresses.length > 0 && (
                                             <div
@@ -317,9 +299,7 @@ function LargeFilterView(props: {
                                                         const selectedAddress = addresses[position];
                                                         const address: Address = selectedAddress.address;
                                                         address.position = selectedAddress.referencePosition || address.position;
-                                                        const businesses = await ApiRequests.getNearbyBusinesses(getChefSearchRequest(address, distance, cuisines));
                                                         setAddress(address);
-                                                        setBusinesses(businesses.data);
                                                     }
                                                 }>
                                                     {
@@ -335,6 +315,26 @@ function LargeFilterView(props: {
                                             </div>
                                         )
                                     }
+
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                        onClick={() => onChangeLocation()} type="button">
+                                        Change
+                                    </button>
+
+                                    <button
+                                        className="ml-4 bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded"
+                                        onClick={() => {
+                                            const chefSearchRequest = getChefSearchRequest(address, distance, cuisines);
+                                            ApiRequests
+                                                .getNearbyBusinesses(chefSearchRequest)
+                                                .then((response) => {
+                                                    setBusinesses(response.data);
+                                                    toast.success("Nearby businesses updated");
+                                                });
+                                        }} type="button">
+                                        Submit
+                                    </button>
                                 </div>
 
 

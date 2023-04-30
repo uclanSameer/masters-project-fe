@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
 
 function HomeIcon() {
@@ -33,11 +34,12 @@ function UserIcon() {
 }
 
 function Users() {
-    return <button
+    return <Link
+        href="/admin/users"
         className="flex jusitfy-start items-center w-full  space-x-6 focus:outline-none text-white focus:text-indigo-400   rounded ">
         <UserIcon />
         <p className="text-base leading-4 ">Users</p>
-    </button>;
+    </Link>;
 }
 
 export default function TopSideBar(props: {

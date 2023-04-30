@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { MutableRefObject, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import ApiRequests from "../../utils/api-requests";
 import { UserProfile } from "@/model/user";
+import { parse } from "cookie";
 
 export default function Profile(props: {
     profile: UserProfile
@@ -19,7 +20,6 @@ export default function Profile(props: {
         reader.onload = () => {
             if (typeof reader.result !== 'string') return;
             setImageAsBase64(reader.result.split(',')[1]);
-            setImage(`data:image/jpeg;base64,${image}`);
         };
     }
 
@@ -31,8 +31,9 @@ export default function Profile(props: {
             });
             return;
         }
-        const user = localStorage.getItem('user') || '';
-        let token = JSON.parse(user).token;
+        const cookie = document.cookie;
+        const parsedCookie = parse(cookie);
+        let token = parsedCookie.token;
         ApiRequests.uploadProfileImage(imageAsBase64, token)
             .then(res => {
                 const data = res.data;
@@ -46,13 +47,16 @@ export default function Profile(props: {
     const [buttonLabel, setButtonLabel] = useState('Edit Profile');
 
     const [imageAsBase64, setImageAsBase64] = useState('');
-    const imageUrl = props.profile.userDetail?.imageUrls || '';
-    const [image, setImage] = useState<string>(imageUrl ? imageUrl : '/images/profile.png');
+    const imageUrl = props.profile.userDetail?.imageUrl || '';
+    const [image, setImage] = useState<string>(imageUrl !== undefined ? imageUrl : '/images/profile.png');
 
     const [editMode, setEditMode] = useState(false);
 
     const imageRef = useRef<HTMLInputElement>();
 
+    useEffect(() => { }, [image]);
+
+    const address = props.profile.userDetail.address;
     return (
         <div className="max-w-4xl flex items-center h-auto lg:h-screen flex-wrap mx-auto my-32 lg:my-0">
             <div id="profile"
@@ -70,10 +74,12 @@ export default function Profile(props: {
                     </p>
                     <p className="pt-2 text-gray-600 text-xs lg:text-sm flex items-center justify-center lg:justify-start">
                         <LocaionIcon />
-                        Your Location - {props.profile.userDetail.latitude}, {props.profile.userDetail.longitude}
+                        Your Location - {
+                            address?.postalCode
+                        }
                     </p>
-                    <p className="pt-8 text-lg font-normal italic">Cusines:</p>
-                    <p className="pt-1 text-sm">Nepalese,..., ...</p>
+                    {/* <p className="pt-8 text-lg font-normal italic">Cusines:</p>
+                    <p className="pt-1 text-sm">Nepalese,..., ...</p> */}
 
                     <div className="pt-12 pb-8">
                         <button onClick={
@@ -95,8 +101,19 @@ export default function Profile(props: {
             </div>
 
             <div className="w-full lg:w-2/5">
-                <Image alt='profile picture' width={600} height={800} src={image}
-                    className="rounded-none lg:rounded-lg shadow-2xl hidden lg:block" />
+                {imageAsBase64 !== '' ? (
+                    <Image
+                        className={"rounded-lg mt-2 object-center"}
+                        src={`data:image/jpeg;base64,${imageAsBase64}`} width={800} height={1000}
+                        alt="Uploaded Image" />
+                ) :
+                    <Image
+                        className={"rounded-lg mt-2 object-center"}
+                        src={image} width={800} height={1000}
+                        alt="Uploaded Image" />
+
+                }
+
                 {
                     editMode &&
                     <div>

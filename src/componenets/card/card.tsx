@@ -2,6 +2,9 @@ import { MenuItem } from "@/model/menu";
 import Image from "next/image";
 import { EmailIcon, Internet } from "../svg/images";
 import { BriefcaseIcon, MapPinIcon } from "@heroicons/react/20/solid";
+import AuthContext from "@/context/auth-context";
+import { useContext, useEffect } from "react";
+import { parse } from "cookie";
 
 export interface CardProps extends MenuItem {
     onClick: {
@@ -10,6 +13,8 @@ export interface CardProps extends MenuItem {
 }
 
 export default function Card(props: CardProps) {
+    const authContext = useContext(AuthContext);
+    const isLoggedIn = authContext.isLoggedIn;
     const buttonLabel = props.instantDelivery ? "Add to cart" : "Pre-order";
 
     return (
@@ -55,20 +60,19 @@ export default function Card(props: CardProps) {
                 </div>
                 <div className="flex items-center justify-between p-5">
                     <span className="text-3xl font-bold text-gray-900 dark:text-white">£{props.price}</span>
-                    <button onClick={
-                        () => {
-                            props.onClick.addItem();
+                    {
+                        isLoggedIn && <button onClick={
+                            () => {
+                                props.onClick.addItem();
+                            }
                         }
+                            className="text-white self-end bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            {buttonLabel}
+                        </button>
                     }
-                        className="text-white self-end bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        {buttonLabel}</button>
                 </div>
             </div>
 
         </>
     );
-}
-
-function buildFormattedAddress(props: CardProps) {
-    return props.businessLocation?.houseNumber + " " + props.businessLocation?.street + ", " + props.businessLocation?.city + ", " + props.businessLocation?.postcode;
 }

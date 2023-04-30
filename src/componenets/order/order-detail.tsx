@@ -1,16 +1,18 @@
-import {CartInfo} from "@/model/cart-info";
-import OrderLineItem from "./line-item";
+import { CartInfo } from "@/model/cart-info";
+import OrderLineItem from "./OrderLineItem";
 import OrderSidebar from "./order-sidebar";
 import ShippingDetails from "./shipping-details";
 import OrderSummary from "./summary";
-import {MenuItem} from "@/model/menu";
-import {OrderInfo} from "@/model/order-info";
+import { MenuItem } from "@/model/menu";
+import { OrderInfo } from "@/model/order-info";
+import { CustomerOrders } from "./CustomerOrders";
+
 
 
 export default function OrderDetails(props: {
     orders: Array<OrderInfo>;
 }) {
-    const {orders} = props;
+    const { orders } = props;
     const subtotal = orders
         .map((orderItem) => (orderItem.menuItem.price) * (orderItem.quantity))
         .reduce((a, b) => a + b, 0);
@@ -26,27 +28,14 @@ export default function OrderDetails(props: {
             <div
                 className="mt-10 flex flex-col xl:flex-row jusitfy-center items-stretch w-full xl:space-x-8 space-y-4 md:space-y-6 xl:space-y-0">
                 <div className="flex flex-col justify-start items-start w-full space-y-4 md:space-y-6 xl:space-y-8">
-                    <div
-                        className="flex flex-col justify-start items-start dark:bg-gray-800 bg-gray-50 px-4 py-4 md:py-6 md:p-6 xl:p-8 w-full">
-                        <p className="text-lg md:text-xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800">Customer’s
-                            Orders</p>
-
-                        {
-                            orders.map((orderItem, index) => {
-                                return <OrderLineItem
-                                    key={index}
-                                    orderItem={orderItem}/>
-                            })
-                        }
-
-                    </div>
+                    <CustomerOrders orders={orders}></CustomerOrders>
                     <div
                         className="flex justify-center flex-col md:flex-row items-stretch w-full space-y-4 md:space-y-0 md:space-x-6 xl:space-x-8">
-                        <OrderSummary subtotal={subtotal}/>
-                        <ShippingDetails/>
+                        <OrderSummary subtotal={subtotal} />
+                        <ShippingDetails />
                     </div>
                 </div>
-                <OrderSidebar/>
+                <OrderSidebar />
             </div>
         </div>
     );

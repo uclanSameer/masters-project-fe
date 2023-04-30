@@ -6,3 +6,9 @@ export type ServerSideContext = {
     };
     res: any;
 };
+
+
+export interface UpdateDeliveryRequest {
+    orderNumber: string;
+    emailOfDeliveryPerson: string;    
+}

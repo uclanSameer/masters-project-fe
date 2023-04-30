@@ -11,7 +11,10 @@ export default function Signup() {
     return (
         <Fragment>
             <div className="bg-gray-200">
-                <SignupComponent />
+                <SignupComponent
+                 isDelivery = {false}
+                 showAlreadHaveAccount = {true}
+                  />
             </div>
         </Fragment>
     );

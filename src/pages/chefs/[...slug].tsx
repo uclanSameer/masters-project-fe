@@ -2,17 +2,22 @@ import BusinessInformation from '@/componenets/business/information';
 import MenuItems from '@/componenets/menu/menu-items';
 import { Business } from '@/model/business';
 import { MenuItem } from '@/model/menu';
-import ApiRequests from '@/utils/api-requests';
+import { ChefFullResponse } from '@/model/response';
 import { GET, POST } from '@/utils/requests';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 
 
-export default function ChefPage(props: ChefDetails) {
-    const items = props.menus;
+export default function ChefPage(props: {
+    ChefFullResponse: ChefFullResponse
+}) {
+    const chefFullResponse = props.ChefFullResponse;
+    const items = chefFullResponse.menuItems;
     return (
         <>
             <BusinessInformation
-                business={props.business}
+                featuredMenuItemCount={chefFullResponse.featuredItemsCount}
+                totalMenuItemCount={chefFullResponse.menuItemsCount}
+                business={chefFullResponse.cheifDetails}
             />
 
             {items.length > 0 && <>
@@ -37,13 +42,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSideP
         }
     }
 
-    const businessDetailResponse = await GET<Array<Business>>(`http://localhost:3001/search/cheif/${id}`);
-    const business = businessDetailResponse.data[0];
-    const menuResposne = await ApiRequests.getMenuItemsByEmail(business.email);
+    const ChefFullResponse = ((await GET<ChefFullResponse>(`http://localhost:3001/search/chef/details?id=${id}`)).data);
     return {
         props: {
-            business,
-            menus: menuResposne.data
+            ChefFullResponse
         }
     }
 }

@@ -13,11 +13,15 @@ import CartIcon from '../icon/shoping-cart';
 
 const beforeAuthenticationRoute = ['/login', '/signup', '/'];
 
-const navigationBeforeLogIn = [
+const navigationAfterLogIn = [
     { name: 'Home', href: '/dashboard', current: true },
     { name: 'Menu', href: '/menu', current: false },
     { name: 'Nearby Chefs', href: '/chefs', current: false },
-    { name: 'Donate', href: '#', current: false },
+    // { name: 'Donate', href: '#', current: false },
+]
+
+const navigationBeforeLogIn = [
+    { name: 'Menu', href: '/menu', current: false },
 ]
 
 const menuItems = [
@@ -33,14 +37,22 @@ export function classNames(...classes: string[]) {
 export default function NavBar() {
     const authContext = useContext(AuthContext);
 
+    const authLoggedIn = authContext.isLoggedIn;
+
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
+    
 
     useEffect(() => {
         const cookie = parse(document.cookie);
         const isLoggedIn = cookie.loggedIn === 'true';
+
+        if(isLoggedIn && !authLoggedIn) {
+            authContext.onLogin();
+        }
+
         setLoggedIn((loggedIn) => isLoggedIn);
         if (isLoggedIn) {
             if (cookie.role === 'USER') {
@@ -81,14 +93,16 @@ export default function NavBar() {
                         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                             <div className="relative flex h-16 items-center justify-between">
                                 <MenuIcon open={open} />
-                                <NavItems navigationBeforeLogIn={navigationBeforeLogIn} />
+                                <NavItems navigationBeforeLogIn={
+                                    loggedIn ? navigationAfterLogIn: navigationBeforeLogIn
+                                    } />
                                 {loggedIn && (
                                     <div
                                         className={"\"absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0\""
                                         }>
                                         <button
                                             type="button"
-                                            className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                            className="collapse rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                         >
                                             <span className="sr-only">View notifications</span>
                                             <BellIcon className="h-6 w-6" aria-hidden="true" />
@@ -155,7 +169,7 @@ export default function NavBar() {
                             </div>
                         </div>
 
-                        <DisclosedNavItems navItems={navigationBeforeLogIn} />
+                        <DisclosedNavItems navItems={navigationAfterLogIn} />
                     </>
                 )}
             </Disclosure>

@@ -1,5 +1,5 @@
-import React, {Fragment, useContext, useEffect, useState} from "react";
-import {parse} from "cookie";
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import { parse } from "cookie";
 import AuthContext from "@/context/auth-context";
 import NavBar from "../nav/nav";
 import AdminNavigation from "../admin/admin-nav";
@@ -19,11 +19,9 @@ export default function LandingLayout(props: { children: JSX.Element }) {
         return (
             <Fragment>
                 {
-                    !authContext.isLoggedIn ? <NavBar/> :
-                        ((role === 'ADMIN') ?
-                            <AdminNavigation
-                                role={role}/> :
-                            ((role === 'BUSINESS') ? <AdminNavigation role={role}/> : <NavBar/>))
+                    role === 'ADMIN' ? <AdminNavigation role={role} /> : (
+                        role === 'BUSINESS' ? <AdminNavigation role={role} /> : <NavBar />
+                    )
                 }
                 {props.children}
             </Fragment>

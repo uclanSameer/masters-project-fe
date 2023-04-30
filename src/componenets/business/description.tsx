@@ -10,7 +10,7 @@ export default function BusinessDescription(
         <p className="text-gray-600 text-center font-light lg:px-16">
             Some Random Bio Information</p>
         <button
-            className="text-indigo-500 py-2 px-4  font-medium mt-4"
+            className="text-indigo-500 py-2 px-4  font-medium mt-4 collapse"
         >
             Show more
         </button>

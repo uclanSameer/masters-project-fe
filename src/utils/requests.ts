@@ -24,7 +24,6 @@ export function fetcherWithToken<T>(
     return fetch(url, reqObject)
         .then((res) => {
             if (res.ok) {
-
                 return res.json() as Promise<Response<T>>;
             }
 
@@ -35,10 +34,6 @@ export function fetcherWithToken<T>(
         });
 
 }
-
-
-
-
 
 export const GET = <T>(url: string) => {
     return fetcherWithToken<T>(url, 'GET');

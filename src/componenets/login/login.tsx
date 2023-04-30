@@ -20,9 +20,18 @@ export default function LoginComponent() {
         const enteredEmail = emailRef.current?.value || '';
         const enteredPassword = passwordRef.current?.value || '';
 
-        // optional: Add validation
-
-
+        if (enteredEmail.trim().length === 0 || enteredPassword.trim().length === 0) {
+            toast.error('Please enter a valid email and password', {
+                position: "bottom-right",
+            });
+            return;
+        }
+        if (!enteredEmail.includes('@')) {
+            toast.error('Please enter a valid email', {
+                position: "bottom-right",
+            });
+            return;
+        }
         const myHeaders = new Headers();
         myHeaders.append("email", enteredEmail);
         myHeaders.append("password", enteredPassword);
@@ -49,12 +58,13 @@ export default function LoginComponent() {
                 return router.push('/admin/dashboard');
             } else if (role === 'BUSINESS') {
                 return router.push('/business-dashboard');
+            } else if (role === 'DELIVERY') {
+                return router.push('/delivery/dashboard');
             }
-            return router.push('/dashboard');
         } else {
             const error = await result.json();
             if (error.data) {
-                toast.error(error.data, {
+                toast.error('Wrong username or password', {
                     position: "bottom-right",
                 });
             }

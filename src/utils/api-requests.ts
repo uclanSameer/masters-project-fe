@@ -1,9 +1,12 @@
 import { PostCodeResult } from "@/model/post-code";
-import { GET, POST } from "./requests";
-import { Response } from "@/model/response";
+import { GET, GetWithToken, POST, PUT, PostWithToken } from "./requests";
+import { Response, Transaction } from "@/model/response";
 import { ChefSearchRequest } from "@/model/search";
 import { Business } from "@/model/business";
 import { MenuItem } from "@/model/menu";
+import { UserProfile } from "@/model/user";
+import { Delivery } from "@/model/delivery";
+import { UpdateDeliveryRequest } from "@/model/types";
 
 export default class ApiRequests {
     public static getAddressInfo(enteredPostalCode: string): Promise<Response<Array<PostCodeResult>>> {
@@ -28,8 +31,52 @@ export default class ApiRequests {
         });
     }
 
-    public static getCuisines(){
+    public static getCuisines() {
         return GET<Array<String>>('http://localhost:3001/search/cuisines');
     }
 
+    public static registerDeliveryPerson(deliveryPerson: UserProfile) {
+        return POST<any>('http://localhost:8080/api/v1/delivery/register', deliveryPerson);
+    }
+
+    public static getAllTransactions(token: string) {
+        return GetWithToken<Array<Transaction>>('http://localhost:8080/api/v1/transactions/all', token);
+    }
+
+    public static getAllUsers(token: string) {
+        return GetWithToken<Array<UserProfile>>('http://localhost:8080/api/v1/details/users/all', token);
+    }
+
+    public static getAllUsersByRole(role: string, token: string) {
+        return GetWithToken<Array<UserProfile>>(`http://localhost:8080/api/v1/details/users/role?role=${role}`, token);
+    }
+
+    public static getUnassignedDeliveries(token: string) {
+        return GetWithToken<Array<Delivery>>('http://localhost:8080/api/v1/delivery/unassigned', token);
+    }
+
+
+    public static getNotDelivered(token: string) {
+        return GetWithToken<Array<Delivery>>('http://localhost:8080/api/v1/delivery/notDelivered', token);
+    }
+
+    public static getDelivered(token: string) {
+        return GetWithToken<Array<Delivery>>('http://localhost:8080/api/v1/delivery/delivered', token);
+    }
+
+
+    public static updateDeliveryRequest(updateRequest: UpdateDeliveryRequest) {
+        return POST('http://localhost:8080/api/v1/delivery/assign', updateRequest);
+    }
+
+
+    public static getAllToDeliverItems(token: string) {
+        return GetWithToken<Array<Delivery>>('http://localhost:8080/api/v1/delivery/toDeliver', token);
+    }
+
+    public static updateDeliveryStatus(orderNumber: string) {
+        return PUT(`http://localhost:8080/api/v1/delivery/delivered/${orderNumber}`, {
+
+        });
+    }
 }

@@ -30,15 +30,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
         const cookies = parse(req.headers.cookie || '');
 
-        if (!cookies.token) {
-            return {
-                redirect: {
-                    destination: '/login',
-                    permanent: false
-                }
-            };
-        }
-
         const response = await PostWithToken<CartInfo>("http://localhost:8080/api/v1/cart/info", {}, cookies.token);
 
         return {

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import CompanyLogo from "./logo";
 import { classNames } from "./nav";
+import AuthContext from "@/context/auth-context";
+import { useContext } from "react";
 
 export default function NavItems(props: {
     navigationBeforeLogIn: Array<{
@@ -9,6 +11,8 @@ export default function NavItems(props: {
         current: boolean
     }>;
 }): JSX.Element {
+    const authContext = useContext(AuthContext);
+    const isLoggedIn = authContext.isLoggedIn;
     const { navigationBeforeLogIn } = props;
     return (
         <>

@@ -5,7 +5,7 @@ const AuthContext = createContext({
     isLoggedIn: false,
     onLogout: () => {
     },
-    onLogin: (user: User) => {
+    onLogin: () => {
     },
     cartItemCount: 0,
     incrementCartItemCount: () => { },
@@ -18,7 +18,7 @@ export function AuthContextProvider(props: { children: string | number | boolean
     const [cartItemCount, setCartItemCount] = useState(0);
 
 
-    function loginHandler(loggedInUser: User) {
+    function loginHandler() {
         setIsLoggedIn(true);
     }
 

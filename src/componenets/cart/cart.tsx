@@ -46,7 +46,7 @@ export default function CartComponent(props: {
     }
 
     function handleError(err: Error) {
-        console.log(err);
+        console.error(err);
         toast.error("Error removing item from cart", {
             position: "bottom-right",
         });
@@ -117,7 +117,15 @@ export default function CartComponent(props: {
 
                 <CartSideBar
                     total={total}
-                    checkout={props.checkout} />
+                    checkout={() => {
+                        if (props.items.length === 0) {
+                            toast.error("Cart is empty", {
+                                position: "bottom-right",
+                            });
+                            return;
+                        }
+                        props.checkout();
+                    }} />
             </div>
         </>
     );

@@ -37,6 +37,7 @@ export interface SignUpUserDetail {
     phoneNumber: string;
     address:  Address;
     imageUrls: string
+    imageUrl?: string;
     position: Position;
     latitude?: number;
     longitude?: number;

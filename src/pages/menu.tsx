@@ -16,7 +16,7 @@ export default function MenuPage(props: {
         if (search !== '') {
             POST<Array<MenuItem>>('http://localhost:3001/search/menu', {
                 page: 1,
-                size: 10,   
+                size: 25,   
                 search: search
             })
                 .then(data => {
@@ -55,7 +55,7 @@ export async function getStaticProps() {
     try {
         const response = await POST<Array<MenuItem>>('http://localhost:3001/search/menu/all', {
             page: 1,
-            size: 10,
+            size: 25,
         })
 
         return {
