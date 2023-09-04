@@ -52,8 +52,9 @@ export default function LoginComponent() {
             document.cookie = `role=${role}`;
             document.cookie = `email=${data.data.email}`;
             document.cookie = `address=${addressToString}`;
+            document.cookie = `userId=${data.data.userId}`;
             document.cookie = `loggedIn=true`;
-            authContext.onLogin(data.data);
+            authContext.onLogin();
             if (role === 'ADMIN') {
                 return router.push('/admin/dashboard');
             } else if (role === 'BUSINESS') {

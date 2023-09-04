@@ -15,7 +15,7 @@ export default function Dashboard(props: {
             {/*heading for featured foods*/}
 
             <Banner
-                imageUrl="/images/banner1.jpg"
+                imageUrl="/images/banner2.jpeg"
                 title="Welcome to Neighbour"
                 subtitle="Discover the best food around your neighbourhood!"
             />

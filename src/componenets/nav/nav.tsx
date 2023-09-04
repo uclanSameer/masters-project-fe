@@ -17,12 +17,12 @@ const navigationAfterLogIn = [
     { name: 'Home', href: '/dashboard', current: true },
     { name: 'Menu', href: '/menu', current: false },
     { name: 'Nearby Chefs', href: '/chefs', current: false },
-    // { name: 'Donate', href: '#', current: false },
 ]
 
 const navigationBeforeLogIn = [
     { name: 'Menu', href: '/menu', current: false },
 ]
+
 
 const menuItems = [
     { name: 'Your Profile', href: '/profile', show: true },
@@ -43,13 +43,13 @@ export default function NavBar() {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
-    
+
 
     useEffect(() => {
         const cookie = parse(document.cookie);
         const isLoggedIn = cookie.loggedIn === 'true';
 
-        if(isLoggedIn && !authLoggedIn) {
+        if (isLoggedIn && !authLoggedIn) {
             authContext.onLogin();
         }
 
@@ -61,7 +61,7 @@ export default function NavBar() {
                 }
             }
         } else {
-            router.push('/login');
+            router.push('/');
         }
         setIsLoading(false);
     }, [authContext.isLoggedIn]);
@@ -94,8 +94,8 @@ export default function NavBar() {
                             <div className="relative flex h-16 items-center justify-between">
                                 <MenuIcon open={open} />
                                 <NavItems navigationBeforeLogIn={
-                                    loggedIn ? navigationAfterLogIn: navigationBeforeLogIn
-                                    } />
+                                    loggedIn ? navigationAfterLogIn : navigationBeforeLogIn
+                                } />
                                 {loggedIn && (
                                     <div
                                         className={"\"absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0\""

@@ -8,6 +8,7 @@ import { PostCodeResult } from "@/model/post-code";
 import LockImage from "../svg/lock";
 import { POST } from "@/utils/requests";
 import { GeneralUtils } from "@/utils/general-utils";
+import { AlreadyLoggedIn } from "../login/AlreadyLoggedIn";
 
 const buttonClass = "group relative flex w-full justify-center rounded-md border border-transparent py-2 px-4 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2";
 const signupButton = buttonClass + " bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500";
@@ -112,6 +113,7 @@ export default function SignupComponent(props: {
         ApiRequests.getAddressInfo(postalCode)
             .then((res) => {
                 setAddresses(res.data);
+                setAddressInfo(res.data[0]);
             })
             .catch((err) => {
                 console.error(err);
@@ -276,8 +278,6 @@ export default function SignupComponent(props: {
                                 </div>
                             )}
 
-                        <input />
-
                         <button
                             onClick={signupHandler}
                             type="submit"
@@ -293,12 +293,7 @@ export default function SignupComponent(props: {
                     {
                         props.showAlreadHaveAccount && (
 
-                            <div className="text-grey-dark mt-6">
-                                Already have an account?
-                                <Link className="border-b border-blue text-blue-600 ml-1" href="/login">
-                                    Log in
-                                </Link>.
-                            </div>
+                            <AlreadyLoggedIn />
                         )
                     }
                 </div>
@@ -315,6 +310,67 @@ export default function SignupComponent(props: {
         const enteredConfirmPassword = confirmPasswordRef.current?.value || '';
         const enteredFullName = fullNameRef.current?.value || '';
         const enteredPhoneNumber = phoneNumberRef.current?.value || '';
+
+        if (!enteredEmail || !enteredEmail.includes('@')) {
+            toast.error("Please enter a valid email address", {
+                position: "bottom-right"
+            });
+            return;
+        }
+
+
+        if (!enteredPassword || enteredPassword.length < 8) {
+            toast.error("Please enter a valid password (at least 8 characters)", {
+                position: "bottom-right"
+            });
+
+            return;
+        }
+
+        const passwords = enteredPassword.split('');
+        if(passwords.filter((char) => char === char.toUpperCase()).length < 1) {
+            toast.error("Please enter a valid password (at least 1 uppercase)", {
+                position: "bottom-right"
+            });
+
+            return;
+        }
+
+        if(passwords.filter((char) => char === char.toLowerCase()).length < 1) {
+            toast.error("Please enter a valid password (at least 1 lowercase)", {
+                position: "bottom-right"
+            });
+
+            return;
+        }
+
+        // check if password contains a number
+        if(passwords.filter((char) => !isNaN(+char)).length < 1) {
+            toast.error("Please enter a valid password (at least 1 number)", {
+                position: "bottom-right"
+            });
+
+            return;
+        }
+
+
+
+
+        if (!enteredFullName) {
+            toast.error("Please enter your full name", {
+                position: "bottom-right"
+            });
+            return;
+        }
+
+        if (!enteredPhoneNumber || enteredPhoneNumber.length !== 11) {
+            toast.error("Please enter a valid phone number", {
+                position: "bottom-right"
+            });
+            return;
+        }
+
+
 
         if (enteredPassword !== enteredConfirmPassword) {
             toast.error("Passwords do not match", {
@@ -369,10 +425,19 @@ export default function SignupComponent(props: {
         }
 
         if (isBusinsess) {
-            const business = await registerBusisness(user);
-            if (business) {
-                (window as any).location.href = business.data;
+            try {
+                const business = await registerBusisness(user);
+                toast.success("Signup successfull, Check your email for verification", {
+                    position: "bottom-right",
+                });
+                return router.push('/login');
+            } catch (error) {
+                console.error(error);
+                toast.error("Something went wrong!!", {
+                    position: "bottom-right",
+                });
             }
+
 
         } else {
             const [response, error] = await signupNormalUser(user);

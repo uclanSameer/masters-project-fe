@@ -3,6 +3,7 @@ export interface User {
     type:     string;
     email:    string;
     userRole: string;
+    userId:   number;
     address:  Address;
 }
 
